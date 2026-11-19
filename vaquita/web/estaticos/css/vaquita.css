@@ -38,7 +38,7 @@
   --t-1: 1.25rem;
   --t-2: 1.5625rem;
   --t-3: 2.4375rem;
-  --renglon-alto: 2.75rem;
+  --renglon-alto: 48px; /* en px enteros: con fracciones algunas líneas no se dibujan */
   --radio: 6px;
 }
 
@@ -647,7 +647,6 @@ dialog.hoja::backdrop {
 @keyframes subir {
   from {
     transform: translateY(1.5rem);
-    opacity: 0.6;
   }
 }
 
@@ -846,9 +845,8 @@ details.mas[open] > summary {
 .trazo path {
   fill: none;
   stroke: var(--birome);
-  stroke-width: 2.4;
+  stroke-width: 1.4; /* se estira con el SVG: queda de unos 2 px de alto */
   stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
 }
 
 .tachada .renglon,
@@ -887,7 +885,7 @@ details.mas[open] > summary {
   font-size: var(--t-3);
   font-weight: 700;
   line-height: 1.1;
-  max-width: 16ch;
+  max-width: 20ch;
 }
 
 .portada .bajada {
@@ -948,6 +946,7 @@ details.mas[open] > summary {
 
 .cifra dd {
   margin: 0;
+  text-align: left;
   font-size: var(--t-2);
   font-weight: 500;
 }
