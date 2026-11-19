@@ -17,6 +17,61 @@
     </form>
   </section>
 
+  <section class="pila" aria-labelledby="fijos">
+    <h2 id="fijos">Gastos fijos</h2>
+    <p>Se cargan solos cada mes, el día que elijas, divididos entre todos por igual.</p>
+    {% if fijos %}
+    <ul class="movimientos">
+      {% for f in fijos %}
+      <li class="movimiento">
+        <span class="concepto">{{ f.concepto }}</span>
+        <span class="detalle">El día {{ f.dia_del_mes }} de cada mes</span>
+        <span class="monto">{{ f.monto_centavos|plata(ctx.grupo.moneda) }}</span>
+      </li>
+      <li>
+        <form method="post" action="/g/{{ ctx.grupo.id }}/fijos/{{ f.id }}/baja">
+          {{ csrf_input(csrf) }}
+          <button class="boton boton-texto boton-chico">Dejar de repetir «{{ f.concepto }}»</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="post" action="/g/{{ ctx.grupo.id }}/fijos" novalidate class="pila">
+      {{ csrf_input(csrf) }}
+      {% if errores.fijo %}<p class="error" role="alert">{{ errores.fijo }}</p>{% endif %}
+      <div class="campo">
+        <label for="fijo-concepto">En qué</label>
+        <input id="fijo-concepto" name="concepto" maxlength="80" placeholder="Alquiler, internet, expensas" value="{{ valores.concepto or '' }}">
+      </div>
+      <div class="campo">
+        <label for="fijo-monto">Cuánto por mes</label>
+        <input id="fijo-monto" name="monto" inputmode="decimal" autocomplete="off" value="{{ valores.monto or '' }}">
+      </div>
+      <div class="campo">
+        <label for="fijo-pagador">Quién lo paga</label>
+        <select id="fijo-pagador" name="pagador_id">
+          {% for m in ctx.grupo.miembros %}<option value="{{ m.id }}" {% if m.id == ctx.yo.id %}selected{% endif %}>{{ m.nombre }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="campo">
+        <label for="fijo-categoria">Categoría</label>
+        <select id="fijo-categoria" name="categoria">
+          <option value="alquiler">Alquiler y expensas</option>
+          <option value="servicios">Servicios</option>
+          <option value="super">Súper</option>
+          <option value="otros">Otros</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="fijo-dia">Día del mes</label>
+        <input id="fijo-dia" name="dia_del_mes" inputmode="numeric" maxlength="2" value="{{ valores.dia_del_mes or '1' }}" aria-describedby="fijo-dia-ayuda">
+        <p class="ayuda" id="fijo-dia-ayuda">Del 1 al 28, para que exista en todos los meses.</p>
+      </div>
+      <button class="boton boton-secundario">Agregar gasto fijo</button>
+    </form>
+  </section>
+
   <section class="pila" aria-labelledby="quienes">
     <h2 id="quienes">Quiénes están</h2>
     <ul class="movimientos">

@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from sqlalchemy import select
 
 from vaquita.datos.modelos import Evento, Pago
-from vaquita.servicios import grupos, saldos
+from vaquita.servicios import fijos, grupos, saldos
 from vaquita.servicios.esquemas import Alias
 from vaquita.servicios.grupos import NoEncontrado
 from vaquita.web.dependencias import Contexto, EnGrupo, es_htmx, ir_a, pagina
@@ -132,7 +132,13 @@ def historial(request: Request, ctx: Contexto) -> Response:
     return pagina(request, "historial.html", ctx=ctx, pestana="historial", eventos=eventos)
 
 
-def _ajustes(request: Request, ctx: EnGrupo, errores: dict[str, str], guardado: bool) -> Response:
+def _ajustes(
+    request: Request,
+    ctx: EnGrupo,
+    errores: dict[str, str],
+    guardado: bool,
+    valores: dict[str, str] | None = None,
+) -> Response:
     return pagina(
         request,
         "ajustes.html",
@@ -141,6 +147,8 @@ def _ajustes(request: Request, ctx: EnGrupo, errores: dict[str, str], guardado: 
         pestana="ajustes",
         errores=errores,
         guardado=guardado,
+        fijos=fijos.activos(ctx.db, ctx.grupo.id),
+        valores=valores or {},
     )
 
 
@@ -167,3 +175,44 @@ def guardar_alias(
         )
     grupos.guardar_alias(ctx.db, ctx.yo, datos)
     return ir_a(f"/g/{ctx.grupo.id}/ajustes?guardado=1")
+
+
+@rutas.post("/fijos")
+def crear_fijo(
+    request: Request,
+    ctx: Contexto,
+    concepto: Annotated[str, Form()] = "",
+    monto: Annotated[str, Form()] = "",
+    categoria: Annotated[str, Form()] = "alquiler",
+    pagador_id: Annotated[str, Form()] = "",
+    dia_del_mes: Annotated[str, Form()] = "1",
+) -> Response:
+    valores = {"concepto": concepto, "monto": monto, "dia_del_mes": dia_del_mes}
+    try:
+        entrada = fijos.EntradaFijo.model_validate(
+            {
+                "concepto": concepto,
+                "monto": monto,
+                "categoria": categoria,
+                "pagador_id": pagador_id,
+                "dia_del_mes": dia_del_mes,
+            }
+        )
+        fijos.crear(ctx.db, ctx.grupo, entrada, ctx.yo)
+    except ValidationError:
+        error = "Completá en qué es, quién lo paga y un día del 1 al 28."
+        return _ajustes(request, ctx, {"fijo": error}, False, valores)
+    except fijos.FijoInvalido as exc:
+        return _ajustes(request, ctx, {"fijo": str(exc)}, False, valores)
+    except NoEncontrado:
+        raise HTTPException(404) from None
+    return ir_a(f"/g/{ctx.grupo.id}/ajustes")
+
+
+@rutas.post("/fijos/{fijo_id}/baja")
+def baja_fijo(ctx: Contexto, fijo_id: uuid.UUID) -> Response:
+    try:
+        fijos.dar_de_baja(ctx.db, ctx.grupo, fijo_id, ctx.yo)
+    except NoEncontrado:
+        raise HTTPException(404) from None
+    return ir_a(f"/g/{ctx.grupo.id}/ajustes")

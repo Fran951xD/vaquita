@@ -10,6 +10,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy.orm import Session
 
 from vaquita.datos.modelos import Grupo, Miembro
+from vaquita.servicios import fijos
 from vaquita.servicios import grupos as servicio
 from vaquita.web.plantillas import plantillas
 from vaquita.web.seguridad import ip_de
@@ -64,6 +65,7 @@ def en_grupo(grupo_id: uuid.UUID, request: Request, db: Db) -> EnGrupo:
     except (servicio.NoEncontrado, ValueError):
         olvidar(request, grupo_id)
         raise HTTPException(404) from None
+    fijos.generar_pendientes(db, grupo)
     return EnGrupo(grupo=grupo, yo=yo, db=db)
 
 
