@@ -4,7 +4,7 @@
 
 Una app web para dividir gastos con amigos, compañeros de depto o de viaje, y saber al final quién le debe a quién con la menor cantidad de transferencias posible. Pensada para usarse con una mano, en la mesa, sin crear cuenta.
 
-**Demo:** [abrir Vaquita](https://Fran951xD.github.io/vaquita/despertando/) → **Ver un ejemplo** (un viaje a Bariloche con 30 gastos ya cargados). El hosting es gratis y se duerme: la primera visita puede tardar cerca de un minuto.
+**Demo:** [abrir Vaquita](https://Fran951xD.github.io/vaquita/despertando/) (o directo en [vaquita-k36x.onrender.com](https://vaquita-k36x.onrender.com)) → **Ver un ejemplo** (un viaje a Bariloche con 30 gastos ya cargados). El hosting es gratis y se duerme: la primera visita puede tardar cerca de un minuto.
 
 <p>
   <img src="docs/capturas/libreta-celular-claro.png" alt="La libreta de saldos en el celular: cada persona en un renglón con su saldo, y una deuda tachada con birome después de saldarla" width="260">

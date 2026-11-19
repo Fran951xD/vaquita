@@ -40,7 +40,7 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 
 La app gratis se duerme. Para que quien abra el link vea algo prolijo mientras despierta, publicá `despertando/` en GitHub Pages:
 
-1. En `despertando/index.html`, cambiá `const APP = "https://vaquita.onrender.com"` por la URL real de tu app.
+1. En `despertando/index.html`, cambiá `const APP = "https://vaquita-k36x.onrender.com"` por la URL real de tu app.
 2. En GitHub: **Settings → Pages → Build and deployment → Deploy from a branch**, rama `main`, carpeta `/ (root)`. Pages publica la carpeta raíz, así que la página queda en `https://Fran951xD.github.io/vaquita/despertando/`.
    - Si querés que esté en la raíz de Pages, creá una rama `gh-pages` que solo tenga ese `index.html` y publicá esa rama.
 3. Poné ese link en el README y en tu CV. La página consulta `/salud` cada 3 segundos y te lleva a la app apenas responde.
