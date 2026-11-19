@@ -167,7 +167,7 @@ Invariantes en la base: `SUM(aporte) = monto_centavos = SUM(parte)` por gasto (v
 - Exportar CSV, XLSX y PDF (resumen de una o dos páginas, mismo lenguaje visual).
 
 ### Demo
-- "Ver un ejemplo" crea "Viaje a Bariloche": 5 amigos, ~30 gastos en ARS y USD, varias formas de división, un pago, un gasto fijo. Se marca `es_demo`, se borra a las 6 h (limpieza perezosa). Rate limit propio.
+- "Ver un ejemplo" crea "Viaje a Bariloche": 5 amigos, 30 gastos en ARS y USD, las cuatro formas de división y un pago. Se marca `es_demo`, se borra a las 6 h (limpieza perezosa). Sin gasto fijo: en un viaje no tiene sentido; los fijos se prueban en un grupo de depto. Rate limit propio.
 
 ### Cuentas (opcional, última en el orden)
 - Email + contraseña (Argon2). Vincular miembros de grupos a la cuenta para verlos todos juntos. Sin recuperación por email en la v1 (no hay envío de correo gratis confiable; ver Deferred).
