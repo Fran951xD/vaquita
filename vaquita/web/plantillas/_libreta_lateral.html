@@ -1,0 +1,5 @@
+{% from "_macros.html" import libreta %}
+<div id="libreta-lateral" {% if oob %}hx-swap-oob="true"{% endif %}>
+  {{ libreta(cuentas.saldos, cuentas.transferencias, ctx.grupo.moneda, titulo_id="libreta-resumen") }}
+  <p class="acciones acciones-final"><a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/saldos">Ver cómo saldar</a></p>
+</div>

@@ -32,7 +32,14 @@ def test_sin_cotizacion_entre_monedas_distintas_es_error() -> None:
 
 
 @pytest.mark.parametrize(
-    ("texto", "valor"), [("1.234,50", "1234.50"), ("1200", "1200"), ("1250.5", "1250.5")]
+    ("texto", "valor"),
+    [
+        ("1.234,50", "1234.50"),
+        ("1200", "1200"),
+        ("1250.5", "1250.5"),
+        ("1.200", "1200"),
+        ("1.234.567", "1234567"),
+    ],
 )
 def test_parsea_cotizaciones(texto: str, valor: str) -> None:
     assert parsear_cotizacion(texto) == Decimal(valor)

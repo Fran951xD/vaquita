@@ -19,7 +19,8 @@ class CotizacionInvalida(ValueError):
 def parsear_cotizacion(texto: str) -> Decimal:
     """ "1.234,50" o "1250.5" → Decimal. Positiva y con hasta seis decimales."""
     limpio = texto.strip().removeprefix("$").strip()
-    if "," in limpio:
+    # Igual que con los montos: con coma, la coma es decimal; sin coma, "1.200" son miles.
+    if "," in limpio or re.fullmatch(r"\d{1,3}(\.\d{3})+", limpio):
         limpio = limpio.replace(".", "").replace(",", ".")
     if not re.fullmatch(r"\d+(\.\d+)?", limpio):
         raise CotizacionInvalida("Escribí la cotización como un número, por ejemplo 1.250,50.")

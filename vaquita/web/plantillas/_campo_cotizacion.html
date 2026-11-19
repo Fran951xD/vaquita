@@ -1,0 +1,7 @@
+{% from "_macros.html" import error, invalido %}
+<div class="campo" id="cotizacion-campo">
+  <label for="cotizacion">Cotización (pesos por dólar)</label>
+  <input id="cotizacion" name="cotizacion" inputmode="decimal" autocomplete="off" value="{{ form.cotizacion }}" aria-describedby="cotizacion-ayuda{% if errores.get('cotizacion') %} error-cotizacion{% endif %}" {% if errores.get('cotizacion') %}aria-invalid="true"{% endif %}>
+  <p class="ayuda" id="cotizacion-ayuda">{{ cotizacion_ayuda or "Escribila a mano si no carga sola." }} Queda guardada en el gasto: si mañana sube el dólar, los saldos no cambian.</p>
+  {{ error(errores, 'cotizacion') }}
+</div>

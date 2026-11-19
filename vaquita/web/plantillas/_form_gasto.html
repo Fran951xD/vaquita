@@ -1,0 +1,125 @@
+{% from "_macros.html" import error, invalido, csrf_input %}
+{# Formulario de gasto. Camino rápido: monto, concepto, Guardar. Lo demás está en "Cambiar". #}
+{% set g = ctx.grupo %}
+{% set miembros = g.miembros %}
+{% set avanzado_con_error = errores.get('pagador_id') or errores.get('aportes') or errores.get('division') or errores.get('cotizacion') or errores.get('fecha') %}
+<form id="form-gasto" data-gasto data-moneda-grupo="{{ g.moneda }}" method="post" action="{{ accion }}"
+      {% if en_hoja %}hx-post="{{ accion }}" hx-target="this" hx-swap="outerHTML"{% endif %} novalidate>
+  {{ csrf_input(csrf) }}
+  <div class="hoja-titulo">
+    <h2 id="hoja-gasto-titulo">{% if modo == 'editar' %}Editar gasto{% else %}Cargar un gasto{% endif %}</h2>
+    {% if en_hoja %}<button type="button" class="boton boton-texto boton-chico" data-cerrar>Cerrar</button>{% endif %}
+  </div>
+
+  {% if errores.get('general') %}<p class="formulario-error" role="alert">{{ errores.general }}</p>{% endif %}
+
+  <div class="campo">
+    <label for="monto">¿Cuánto fue?</label>
+    <div class="campo-monto">
+      <span aria-hidden="true">{% if form.moneda == 'USD' %}US${% else %}${% endif %}</span>
+      <input id="monto" name="monto" inputmode="decimal" autocomplete="off" placeholder="0" value="{{ form.monto }}" {% if en_hoja %}autofocus{% endif %} {{ invalido(errores, 'monto') }}>
+    </div>
+    {{ error(errores, 'monto') }}
+  </div>
+
+  <div class="campo">
+    <label for="concepto">¿En qué?</label>
+    <input id="concepto" name="concepto" maxlength="80" autocomplete="off" placeholder="Asado, nafta, súper…" value="{{ form.concepto }}" {{ invalido(errores, 'concepto') }}>
+    {{ error(errores, 'concepto') }}
+  </div>
+
+  <details class="mas" {% if avanzado_con_error or modo == 'editar' %}open{% endif %}>
+    <summary>
+      <span>{{ resumen }}</span>
+      <span class="oculto">: cambiar quién pagó, cómo se divide, moneda, fecha o categoría</span>
+    </summary>
+
+    <fieldset>
+      <legend>Quién pagó</legend>
+      <label class="casilla"><input type="checkbox" name="varios_pagadores" value="1" {% if form.varios %}checked{% endif %}> Pagaron varios</label>
+      <div class="campo" data-pagadores="uno">
+        <label for="pagador_id" class="oculto">Quién pagó</label>
+        <select id="pagador_id" name="pagador_id" {{ invalido(errores, 'pagador_id') }}>
+          {% for m in miembros %}<option value="{{ m.id }}" {% if form.pagador_id == m.id|string %}selected{% endif %}>{% if m.id == ctx.yo.id %}Vos ({{ m.nombre }}){% else %}{{ m.nombre }}{% endif %}</option>{% endfor %}
+        </select>
+        {{ error(errores, 'pagador_id') }}
+      </div>
+      <div data-pagadores="varios">
+        <table class="tabla-division">
+          <caption class="oculto">Cuánto puso cada uno</caption>
+          {% for m in miembros %}
+          <tr>
+            <td><label for="aporte_{{ m.id }}">{{ m.nombre }}</label></td>
+            <td><input id="aporte_{{ m.id }}" name="aporte_{{ m.id }}" inputmode="decimal" autocomplete="off" placeholder="0" value="{{ form.aportes.get(m.id|string, '') }}"></td>
+          </tr>
+          {% endfor %}
+        </table>
+        {{ error(errores, 'aportes') }}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Cómo se divide</legend>
+      <div class="fichas">
+        {% for valor, texto in formas.items() %}
+        <label class="ficha"><input type="radio" name="forma_division" value="{{ valor }}" {% if form.forma == valor %}checked{% endif %}><span>{{ texto }}</span></label>
+        {% endfor %}
+      </div>
+      <div data-forma="iguales">
+        <p class="ayuda">Entre quiénes:</p>
+        {% for m in miembros %}
+        <label class="casilla"><input type="checkbox" name="participantes" value="{{ m.id }}" {% if m.id|string in form.participantes %}checked{% endif %}> {{ m.nombre }}</label>
+        {% endfor %}
+      </div>
+      {% for forma, prefijo, ayuda, sufijo in [('exactos', 'exacto_', 'Cuánto le toca a cada uno. Tienen que sumar el total.', ''), ('porcentajes', 'porcentaje_', 'Qué porcentaje le toca a cada uno. Tienen que sumar 100.', '%'), ('partes', 'partes_', 'Cuántas partes le tocan a cada uno: si Juan come doble, ponele 2.', '')] %}
+      <div data-forma="{{ forma }}">
+        <p class="ayuda">{{ ayuda }} Dejá vacío a quien no participa.</p>
+        <table class="tabla-division">
+          <caption class="oculto">{{ formas[forma] }}</caption>
+          {% for m in miembros %}
+          <tr>
+            <td><label for="{{ prefijo }}{{ m.id }}">{{ m.nombre }}{% if sufijo %} ({{ sufijo }}){% endif %}</label></td>
+            <td><input id="{{ prefijo }}{{ m.id }}" name="{{ prefijo }}{{ m.id }}" inputmode="{% if forma == 'partes' %}numeric{% else %}decimal{% endif %}" autocomplete="off" value="{{ form.valores.get(m.id|string, '') if form.forma == forma else ('1' if forma == 'partes' else '') }}"></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      {% endfor %}
+      {{ error(errores, 'division') }}
+    </fieldset>
+
+    <fieldset>
+      <legend>Moneda</legend>
+      <div class="fichas">
+        <label class="ficha"><input type="radio" name="moneda" value="ARS" {% if form.moneda == 'ARS' %}checked{% endif %}><span>Pesos</span></label>
+        <label class="ficha"><input type="radio" name="moneda" value="USD" {% if form.moneda == 'USD' %}checked{% endif %}><span>Dólares</span></label>
+      </div>
+      <div data-cotizacion class="pila">
+        <div class="campo">
+          <label for="tipo_dolar">Dólar</label>
+          <select id="tipo_dolar" name="tipo_dolar" hx-get="/g/{{ g.id }}/cotizacion" hx-include="#fecha, #tipo_dolar" hx-target="#cotizacion-campo" hx-select="#cotizacion-campo" hx-swap="outerHTML" hx-trigger="change">
+            {% for valor, texto in tipos_dolar.items() %}<option value="{{ valor }}" {% if form.tipo_dolar == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+          </select>
+        </div>
+        {% include "_campo_cotizacion.html" %}
+      </div>
+    </fieldset>
+
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" name="fecha" type="date" value="{{ form.fecha }}" {{ invalido(errores, 'fecha') }}>
+      {{ error(errores, 'fecha') }}
+    </div>
+
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria">
+        {% for valor, texto in categorias.items() %}<option value="{{ valor }}" {% if form.categoria == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+      </select>
+    </div>
+  </details>
+
+  <p class="acciones acciones-final">
+    <button class="boton boton-ancho">{% if modo == 'editar' %}Guardar cambios{% else %}Guardar gasto{% endif %}</button>
+  </p>
+</form>

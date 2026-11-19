@@ -1,0 +1,11 @@
+{% extends "_grupo_base.html" %}
+{% from "_macros.html" import csrf_input %}
+{% block contenido %}
+<div class="pila-grande">
+  {% include "_form_gasto.html" %}
+  {% if modo == 'editar' %}
+  <p><a href="/g/{{ ctx.grupo.id }}/gastos/{{ gasto.id }}/borrar">Borrar este gasto</a></p>
+  {% endif %}
+  <p><a href="/g/{{ ctx.grupo.id }}">Volver a los gastos</a></p>
+</div>
+{% endblock %}

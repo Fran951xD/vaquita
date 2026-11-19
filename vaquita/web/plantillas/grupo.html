@@ -1,6 +1,17 @@
 {% extends "_grupo_base.html" %}
 {% block contenido %}
-<div class="vacio pila">
-  <p>Todavía no hay gastos. Cargá el primero: ¿quién pagó qué?</p>
+<div class="grupo-columnas">
+  <div>
+    <div class="barra-accion">
+      <a class="boton" href="/g/{{ ctx.grupo.id }}/gastos/nuevo" data-abrir="hoja-gasto">Cargar un gasto</a>
+    </div>
+    {% include "_movimientos.html" %}
+  </div>
+  <aside class="columna-libreta" aria-label="Saldos">
+    {% include "_libreta_lateral.html" %}
+  </aside>
 </div>
+<dialog class="hoja" id="hoja-gasto" aria-labelledby="hoja-gasto-titulo">
+  {% include "_form_gasto.html" %}
+</dialog>
 {% endblock %}

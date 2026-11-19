@@ -100,8 +100,3 @@ def elegir(
             )
     recordar(request, grupo.id, miembro.id)
     return ir_a(f"/g/{grupo.id}")
-
-
-@rutas.get("/g/{grupo_id}", response_class=HTMLResponse)
-def ver(request: Request, ctx: Contexto) -> Response:
-    return pagina(request, "grupo.html", ctx=ctx, pestana="gastos")

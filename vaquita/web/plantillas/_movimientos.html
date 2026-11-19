@@ -1,0 +1,24 @@
+<div id="movimientos" {% if oob %}hx-swap-oob="true"{% endif %}>
+  {% if not dias %}
+  <div class="vacio">
+    <p>Todavía no hay gastos. Cargá el primero: ¿quién pagó qué?</p>
+  </div>
+  {% else %}
+  {% for dia, items in dias %}
+  <section class="dia" aria-label="{{ dia|fecha_corta }}">
+    <h3>{{ dia|fecha_corta }}</h3>
+    <ul class="movimientos">
+      {% for m in items %}
+      <li>
+        <a class="movimiento{% if m.es_pago %} movimiento-pago{% endif %}" href="{{ m.url }}">
+          <span class="concepto">{{ m.concepto }}</span>
+          <span class="detalle">{{ m.detalle }}</span>
+          <span class="monto">{{ m.centavos|plata(ctx.grupo.moneda) }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+  {% endif %}
+</div>

@@ -1,0 +1,13 @@
+{% extends "_grupo_base.html" %}
+{% from "_macros.html" import csrf_input %}
+{% block contenido %}
+<div class="pila">
+  <h2>{{ pregunta }}</h2>
+  <p>{{ explicacion }}</p>
+  <form method="post" action="{{ accion }}" class="acciones">
+    {{ csrf_input(csrf) }}
+    <button class="boton">{{ boton }}</button>
+    <a class="boton boton-secundario" href="{{ volver }}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

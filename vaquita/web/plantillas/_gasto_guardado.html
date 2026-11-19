@@ -1,0 +1,6 @@
+{# Respuesta HTMX al guardar: formulario limpio + lista y libreta actualizadas fuera de banda. #}
+{% include "_form_gasto.html" %}
+{% with oob = true %}
+{% include "_movimientos.html" %}
+{% include "_libreta_lateral.html" %}
+{% endwith %}
