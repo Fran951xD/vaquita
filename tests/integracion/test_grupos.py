@@ -177,3 +177,20 @@ def test_en_produccion_el_limite_usa_la_ip_que_agrega_el_proxy(app, cliente: Tes
         for i in range(11)
     ]
     assert estados[-1] == 429
+
+
+def test_en_produccion_cada_ip_real_tiene_su_propio_limite(app, cliente: TestClient) -> None:  # type: ignore[no-untyped-def]
+    from dataclasses import replace
+
+    app.state.config = replace(app.state.config, produccion=True)
+    datos = {"nombre": "G", "tu_nombre": "Sofi", "csrf": csrf(cliente)}
+    estados = {
+        cliente.post(
+            "/grupos",
+            data=datos,
+            headers={"X-Forwarded-For": f"1.1.1.1, 200.1.2.{i}"},
+            follow_redirects=False,
+        ).status_code
+        for i in range(12)
+    }
+    assert estados == {303}
