@@ -13,7 +13,7 @@ from starlette.datastructures import FormData
 
 from vaquita.config import hoy
 from vaquita.datos.modelos import Gasto, Pago
-from vaquita.dominio.dinero import Moneda, formatear
+from vaquita.dominio.dinero import Moneda, MontoInvalido, formatear, parsear_monto
 from vaquita.servicios import cotizaciones, saldos
 from vaquita.servicios import gastos as servicio
 from vaquita.servicios.gastos import CATEGORIAS, FORMAS, TIPOS_DOLAR, EntradaGasto, GastoInvalido
@@ -193,6 +193,10 @@ def _guardar(
         return servicio.guardar(ctx.db, ctx.grupo, entrada, ctx.yo, gasto)
     except ValidationError as exc:
         errs = errores_de(exc, {"concepto": "Contá en qué fue el gasto."})
+        try:  # que el error del monto aparezca junto con los demás
+            parsear_monto(str(datos["monto"]))
+        except MontoInvalido as error_monto:
+            errs.setdefault("monto", str(error_monto))
         if any(k in errs for k in ("aportes", "participantes", "valores", "pagador_id")):
             errs = {k: v for k, v in errs.items()} | {"division": "Revisá entre quiénes se divide."}
         return form, errs

@@ -251,6 +251,7 @@ def test_errores_en_espanol_junto_al_campo(cliente: TestClient, sesion: Session)
     )
     assert respuesta.status_code == 422
     assert "Contá en qué fue el gasto." in respuesta.text
+    assert "Ese monto no se entiende" in respuesta.text
     respuesta = cargar(
         cliente,
         grupo_id,
