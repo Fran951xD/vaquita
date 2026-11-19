@@ -720,6 +720,7 @@ details.mas[open] > summary {
 }
 
 /* ---------- La libreta ---------- */
+/* Todo lo que va adentro mide múltiplos de un renglón, así el texto apoya en las líneas. */
 
 .libreta {
   position: relative;
@@ -731,8 +732,7 @@ details.mas[open] > summary {
     var(--renglon) calc(var(--renglon-alto) - 1px),
     var(--renglon) var(--renglon-alto)
   );
-  background-position: 0 3.25rem;
-  padding: 0.5rem 1rem 1.25rem 2.75rem;
+  padding: 0 1rem var(--renglon-alto) 2.75rem;
 }
 
 .libreta::before {
@@ -747,10 +747,11 @@ details.mas[open] > summary {
 }
 
 .libreta h2 {
-  height: 2.75rem;
+  height: var(--renglon-alto);
   display: flex;
   align-items: flex-end;
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.3rem;
+  white-space: nowrap;
 }
 
 .libreta ol,
@@ -761,38 +762,32 @@ details.mas[open] > summary {
 }
 
 .renglon {
-  min-height: var(--renglon-alto);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 0.75rem;
+  height: var(--renglon-alto);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.3rem;
 }
 
 .renglon .quien {
   font-weight: 500;
-  overflow-wrap: anywhere;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .renglon .estado {
   font-size: 0.875rem;
-  margin-left: 0.35rem;
+  margin-left: 0.3rem;
   font-weight: 400;
 }
 
 .renglon .monto {
   font-size: var(--t-1);
   font-weight: 500;
-}
-
-.libreta .total {
-  min-height: var(--renglon-alto);
-  display: flex;
-  align-items: center;
-  color: var(--tenue);
-}
-
-.libreta h2 + .total {
-  margin-top: 0;
+  line-height: 1.2;
 }
 
 .libreta-seccion + .libreta-seccion {
@@ -801,11 +796,6 @@ details.mas[open] > summary {
 
 .transferencia {
   position: relative;
-  padding: 0.55rem 0 0.75rem;
-}
-
-.transferencia .renglon {
-  min-height: auto;
 }
 
 .transferencia .quien {
@@ -817,8 +807,13 @@ details.mas[open] > summary {
 }
 
 .transferencia .acciones {
-  margin-top: 0.5rem;
-  gap: 0.5rem;
+  gap: 0 0.5rem;
+  align-items: center;
+}
+
+/* Cada fila de botones ocupa exactamente un renglón. */
+.transferencia .acciones > * {
+  margin-block: calc((var(--renglon-alto) - 44px) / 2);
 }
 
 .alias {
@@ -841,8 +836,8 @@ details.mas[open] > summary {
   position: absolute;
   left: -0.25rem;
   right: -0.25rem;
-  top: 0.55rem;
-  height: 1.6rem;
+  top: calc(var(--renglon-alto) - 1.55rem);
+  height: 1rem;
   width: calc(100% + 0.5rem);
   overflow: visible;
   pointer-events: none;
@@ -876,9 +871,10 @@ details.mas[open] > summary {
 }
 
 .a-mano {
-  min-height: var(--renglon-alto);
+  height: var(--renglon-alto);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  padding-bottom: 0.3rem;
 }
 
 /* ---------- Portada ---------- */
@@ -906,7 +902,7 @@ details.mas[open] > summary {
 }
 
 .ejemplo {
-  margin-top: 3rem;
+  margin: 3rem 0 0;
 }
 
 .ejemplo figcaption {

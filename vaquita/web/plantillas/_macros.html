@@ -45,13 +45,13 @@
             <span class="alias">Alias <code>{{ t.alias }}</code></span>
             <button type="button" class="boton boton-secundario boton-chico" data-copiar="{{ t.alias }}">Copiar alias</button>
           {% endif %}
-          <a class="boton boton-secundario boton-chico" href="{{ t.whatsapp }}" target="_blank" rel="noopener noreferrer">Avisar por WhatsApp</a>
+          <a class="boton boton-secundario boton-chico" href="{{ t.whatsapp }}" target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp ({{ t.de }} y {{ t.a }})">WhatsApp</a>
           <form method="post" action="/g/{{ grupo.id }}/saldar" hx-post="/g/{{ grupo.id }}/saldar" hx-target="#libreta" hx-select="#libreta" hx-swap="outerHTML">
             {{ csrf_input(csrf) }}
             <input type="hidden" name="de_id" value="{{ t.de_id }}">
             <input type="hidden" name="a_id" value="{{ t.a_id }}">
             <input type="hidden" name="centavos" value="{{ t.centavos }}">
-            <button class="boton boton-chico">Ya se lo pasé</button>
+            <button class="boton boton-chico" aria-label="Ya se lo pasé: {{ t.de }} a {{ t.a }}, {{ t.centavos|plata(moneda) }}">Ya se lo pasé</button>
           </form>
         </div>
         {% endif %}

@@ -34,9 +34,13 @@ MESES_LARGOS = (
 
 
 @cache
+def _huella(ruta: str, _modificado: int) -> str:
+    return hashlib.sha256((ESTATICOS / ruta).read_bytes()).hexdigest()[:10]
+
+
 def estatico(ruta: str) -> str:
-    huella = hashlib.sha256((ESTATICOS / ruta).read_bytes()).hexdigest()[:10]
-    return f"/estaticos/{ruta}?v={huella}"
+    """URL con huella del contenido: se cachea para siempre y cambia si cambia el archivo."""
+    return f"/estaticos/{ruta}?v={_huella(ruta, (ESTATICOS / ruta).stat().st_mtime_ns)}"
 
 
 def plata(centavos: int, moneda: str = "ARS", signo: bool = False) -> str:

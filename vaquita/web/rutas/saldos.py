@@ -72,7 +72,7 @@ def anotar_pago(
 ) -> Response:
     valores = {"de_id": de_id, "a_id": a_id, "monto": monto}
     try:
-        entrada = saldos.EntradaPago(de_id=de_id, a_id=a_id, monto=monto)  # type: ignore[arg-type]
+        entrada = saldos.EntradaPago(de_id=de_id, a_id=a_id, monto=monto)
         saldos.registrar_pago_desde(ctx.db, ctx.grupo, entrada, ctx.yo)
     except ValidationError:
         return _saldos(
