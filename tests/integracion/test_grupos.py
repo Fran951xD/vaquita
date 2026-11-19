@@ -149,3 +149,14 @@ def test_los_estaticos_se_cachean_para_siempre(cliente: TestClient) -> None:
     respuesta = cliente.get("/estaticos/css/vaquita.css")
     assert respuesta.status_code == 200
     assert "immutable" in respuesta.headers["cache-control"]
+
+
+def test_robots_no_indexa_grupos_ni_invitaciones(cliente: TestClient) -> None:
+    texto = cliente.get("/robots.txt").text
+    assert "Disallow: /g/" in texto
+    assert "Disallow: /i/" in texto
+
+
+def test_las_respuestas_van_comprimidas(cliente: TestClient) -> None:
+    respuesta = cliente.get("/estaticos/css/vaquita.css", headers={"Accept-Encoding": "gzip"})
+    assert respuesta.headers["content-encoding"] == "gzip"

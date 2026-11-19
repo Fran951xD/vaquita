@@ -4,8 +4,9 @@ import logging
 import re
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from vaquita import config as configuracion
@@ -13,6 +14,8 @@ from vaquita.datos.base import crear_motor, fabrica_de_sesiones
 from vaquita.web.plantillas import ESTATICOS, plantillas
 from vaquita.web.rutas import cuentas, gastos, grupos, portada, resumen, saldos
 from vaquita.web.seguridad import Cabeceras, Limitador, verificar_csrf
+
+ROBOTS = "User-agent: *\nDisallow: /g/\nDisallow: /i/\nDisallow: /cuenta/\n"
 
 _TITULOS = {
     403: "No se pudo guardar",
@@ -54,6 +57,7 @@ def crear_app(config: configuracion.Config | None = None) -> FastAPI:
     app.state.limitador = Limitador()
     app.state.cliente_http = None  # los tests inyectan un cliente falso
 
+    app.add_middleware(GZipMiddleware, minimum_size=800)
     app.add_middleware(Cabeceras, produccion=config.produccion)
     app.add_middleware(
         SessionMiddleware,
@@ -70,6 +74,11 @@ def crear_app(config: configuracion.Config | None = None) -> FastAPI:
     app.include_router(saldos.rutas)
     app.include_router(resumen.rutas)
     app.include_router(cuentas.rutas)
+
+    @app.get("/robots.txt", include_in_schema=False)
+    def robots() -> PlainTextResponse:
+        # Los grupos y las invitaciones son privados: que no se indexen.
+        return PlainTextResponse(ROBOTS)
 
     @app.get("/salud", include_in_schema=False)
     def salud() -> dict[str, str]:
