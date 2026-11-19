@@ -91,13 +91,13 @@
     <fieldset>
       <legend>Moneda</legend>
       <div class="fichas">
-        <label class="ficha"><input type="radio" name="moneda" value="ARS" {% if form.moneda == 'ARS' %}checked{% endif %}><span>Pesos</span></label>
-        <label class="ficha"><input type="radio" name="moneda" value="USD" {% if form.moneda == 'USD' %}checked{% endif %}><span>Dólares</span></label>
+        <label class="ficha"><input type="radio" class="elegir-moneda" name="moneda" value="ARS" {% if form.moneda == 'ARS' %}checked{% endif %}><span>Pesos</span></label>
+        <label class="ficha"><input type="radio" class="elegir-moneda" name="moneda" value="USD" {% if form.moneda == 'USD' %}checked{% endif %}><span>Dólares</span></label>
       </div>
-      <div data-cotizacion class="pila">
+      <div data-cotizacion class="pila" hx-get="/g/{{ g.id }}/cotizacion" hx-trigger="change from:.elegir-moneda, change from:#tipo_dolar, change from:#fecha" hx-include="#fecha, #tipo_dolar" hx-target="#cotizacion-campo" hx-select="#cotizacion-campo" hx-swap="outerHTML">
         <div class="campo">
           <label for="tipo_dolar">Dólar</label>
-          <select id="tipo_dolar" name="tipo_dolar" hx-get="/g/{{ g.id }}/cotizacion" hx-include="#fecha, #tipo_dolar" hx-target="#cotizacion-campo" hx-select="#cotizacion-campo" hx-swap="outerHTML" hx-trigger="change">
+          <select id="tipo_dolar" name="tipo_dolar">
             {% for valor, texto in tipos_dolar.items() %}<option value="{{ valor }}" {% if form.tipo_dolar == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
           </select>
         </div>

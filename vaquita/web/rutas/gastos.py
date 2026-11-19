@@ -11,14 +11,16 @@ from fastapi.responses import HTMLResponse, Response
 from pydantic import ValidationError
 from starlette.datastructures import FormData
 
+from vaquita.config import hoy
 from vaquita.datos.modelos import Gasto, Pago
 from vaquita.dominio.dinero import Moneda, formatear
+from vaquita.servicios import cotizaciones, saldos
 from vaquita.servicios import gastos as servicio
-from vaquita.servicios import saldos
 from vaquita.servicios.gastos import CATEGORIAS, FORMAS, TIPOS_DOLAR, EntradaGasto, GastoInvalido
 from vaquita.servicios.grupos import NoEncontrado
 from vaquita.web.dependencias import Contexto, EnGrupo, es_htmx, ir_a, pagina
 from vaquita.web.plantillas import errores as errores_de
+from vaquita.web.plantillas import fecha_corta, plata
 
 rutas = APIRouter(prefix="/g/{grupo_id}")
 
@@ -310,3 +312,31 @@ def confirmar_borrar(request: Request, ctx: Contexto, gasto_id: uuid.UUID) -> Re
 def borrar(request: Request, ctx: Contexto, gasto_id: uuid.UUID) -> Response:
     servicio.borrar(ctx.db, ctx.grupo, _gasto(ctx, gasto_id), ctx.yo)
     return ir_a(f"/g/{ctx.grupo.id}")
+
+
+@rutas.get("/cotizacion", response_class=HTMLResponse)
+def cotizacion(
+    request: Request, ctx: Contexto, tipo_dolar: str = "blue", fecha: str = ""
+) -> Response:
+    """Precarga la cotización del día del gasto en el formulario (parcial HTMX)."""
+    try:
+        dia = date.fromisoformat(fecha)
+    except ValueError:
+        dia = hoy()
+    resultado = cotizaciones.obtener(
+        ctx.db,
+        dia,
+        tipo_dolar,
+        request.app.state.config.url_cotizaciones,
+        request.app.state.cliente_http,
+    )
+    form = {"cotizacion": ""}
+    ayuda = None
+    if resultado:
+        form["cotizacion"] = str(resultado.valor).replace(".", ",")
+        nombre = TIPOS_DOLAR.get(tipo_dolar, tipo_dolar)
+        cuando = fecha_corta(resultado.fecha).lower()
+        ayuda = f"{nombre} {cuando}: {plata(int(resultado.valor * 100))} según {resultado.fuente}."
+        if resultado.aproximada:
+            ayuda = f"No pudimos traer la de ese día; usamos la última que tenemos. {ayuda}"
+    return pagina(request, "_campo_cotizacion.html", form=form, errores={}, cotizacion_ayuda=ayuda)

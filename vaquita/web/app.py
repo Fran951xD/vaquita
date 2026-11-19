@@ -34,6 +34,7 @@ def crear_app(config: configuracion.Config | None = None) -> FastAPI:
     app.state.config = config
     app.state.fabrica = fabrica_de_sesiones(crear_motor(config.database_url))
     app.state.limitador = Limitador()
+    app.state.cliente_http = None  # los tests inyectan un cliente falso
 
     app.add_middleware(Cabeceras, produccion=config.produccion)
     app.add_middleware(
