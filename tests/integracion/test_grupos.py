@@ -151,9 +151,8 @@ def test_los_estaticos_se_cachean_para_siempre(cliente: TestClient) -> None:
     assert "immutable" in respuesta.headers["cache-control"]
 
 
-def test_robots_no_indexa_grupos_ni_invitaciones(cliente: TestClient) -> None:
+def test_robots_no_indexa_invitaciones(cliente: TestClient) -> None:
     texto = cliente.get("/robots.txt").text
-    assert "Disallow: /g/" in texto
     assert "Disallow: /i/" in texto
 
 

@@ -516,7 +516,11 @@ legend {
   margin-top: 1.5rem;
 }
 
-.dia h3 {
+.dia-titulo {
+  font-family: var(--sans);
+  font-size: var(--t-chico);
+  font-weight: 600;
+  color: var(--tenue);
   padding-bottom: 0.35rem;
   border-bottom: 1px solid var(--renglon);
 }

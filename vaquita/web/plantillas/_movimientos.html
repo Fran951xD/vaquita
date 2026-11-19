@@ -6,7 +6,7 @@
   {% else %}
   {% for dia, items in dias %}
   <section class="dia" aria-label="{{ dia|fecha_corta }}">
-    <h3>{{ dia|fecha_corta }}</h3>
+    <h2 class="dia-titulo">{{ dia|fecha_corta }}</h2>
     <ul class="movimientos">
       {% for m in items %}
       <li>

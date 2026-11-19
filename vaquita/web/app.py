@@ -15,7 +15,8 @@ from vaquita.web.plantillas import ESTATICOS, plantillas
 from vaquita.web.rutas import cuentas, gastos, grupos, portada, resumen, saldos
 from vaquita.web.seguridad import Cabeceras, Limitador, verificar_csrf
 
-ROBOTS = "User-agent: *\nDisallow: /g/\nDisallow: /i/\nDisallow: /cuenta/\n"
+# /g/ no hace falta: sin la cookie del grupo, cualquier visita (también un buscador) da 404.
+ROBOTS = "User-agent: *\nDisallow: /i/\nDisallow: /cuenta/\n"
 
 _TITULOS = {
     403: "No se pudo guardar",
