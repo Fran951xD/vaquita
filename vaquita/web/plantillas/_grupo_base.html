@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block titulo %}{{ ctx.grupo.nombre }} · Vaquita{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block cuerpo %}
+<div class="pagina pagina-ancha">
+  <header class="cabecera-grupo">
+    <div>
+      <p><a href="/" class="marca">Vaquita</a></p>
+      <h1><span class="emoji" aria-hidden="true">{{ ctx.grupo.emoji }}</span>{{ ctx.grupo.nombre }}</h1>
+      <p>Estás como {{ ctx.yo.nombre }}{% if ctx.grupo.es_demo %}. Es un grupo de ejemplo: se borra solo en unas horas{% endif %}.</p>
+    </div>
+    <a class="boton boton-secundario boton-chico" href="/g/{{ ctx.grupo.id }}/invitar">Invitar</a>
+  </header>
+  <nav class="pestanas" aria-label="Secciones del grupo">
+    <a href="/g/{{ ctx.grupo.id }}" {% if pestana == 'gastos' %}aria-current="page"{% endif %}>Gastos</a>
+    <a href="/g/{{ ctx.grupo.id }}/saldos" {% if pestana == 'saldos' %}aria-current="page"{% endif %}>Saldos</a>
+    <a href="/g/{{ ctx.grupo.id }}/resumen" {% if pestana == 'resumen' %}aria-current="page"{% endif %}>Resumen</a>
+    <a href="/g/{{ ctx.grupo.id }}/historial" {% if pestana == 'historial' %}aria-current="page"{% endif %}>Historial</a>
+    <a href="/g/{{ ctx.grupo.id }}/ajustes" {% if pestana == 'ajustes' %}aria-current="page"{% endif %}>Ajustes</a>
+  </nav>
+  <main id="contenido" class="contenido-grupo">
+    {% block contenido %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

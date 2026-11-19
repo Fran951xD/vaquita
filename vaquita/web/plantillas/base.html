@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block titulo %}Vaquita{% endblock %}</title>
+  <meta name="description" content="{% block descripcion %}Anotá los gastos del viaje, el depto o el asado con tu grupo. Vaquita calcula quién le pasa cuánto a quién con la menor cantidad de transferencias.{% endblock %}">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1e2b27" media="(prefers-color-scheme: dark)">
+  <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false,"allowScriptTags":false,"historyCacheSize":0,"responseHandling":[{"code":"204","swap":false},{"code":"[23]..","swap":true},{"code":"422","swap":true},{"code":"[45]..","swap":false,"error":true}]}'>
+  {% block robots %}{% endblock %}
+  <link rel="preload" href="/estaticos/fuentes/archivo.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ estatico('css/vaquita.css') }}">
+  <link rel="icon" href="{{ estatico('vaquita.svg') }}" type="image/svg+xml">
+  <script src="{{ estatico('js/htmx.min.js') }}" defer></script>
+  <script src="{{ estatico('js/vaquita.js') }}" defer></script>
+</head>
+<body hx-headers='{"X-CSRF-Token": "{{ csrf }}"}'>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  {% block cuerpo %}
+  <div class="pagina">
+    <header class="encabezado-sitio">
+      <a class="marca" href="/">Vaquita</a>
+    </header>
+    <main id="contenido">
+      {% block contenido %}{% endblock %}
+    </main>
+  </div>
+  {% endblock %}
+  <div class="aviso" id="aviso" role="status" aria-live="polite">{% block aviso %}{% endblock %}</div>
+</body>
+</html>

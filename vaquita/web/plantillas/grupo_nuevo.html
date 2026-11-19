@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error, invalido, csrf_input %}
+{% block titulo %}Crear un grupo · Vaquita{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block contenido %}
+<div class="pila-grande contenido-grupo">
+  <h1>Crear un grupo</h1>
+  {% if errores %}<p class="formulario-error" role="alert">Revisá los datos marcados abajo.</p>{% endif %}
+  <form method="post" action="/grupos" novalidate>
+    {{ csrf_input(csrf) }}
+    <div class="campo">
+      <label for="nombre">¿Cómo se llama?</label>
+      <input id="nombre" name="nombre" maxlength="60" required placeholder="Viaje a Bariloche" value="{{ valores.nombre or '' }}" {{ invalido(errores, 'nombre') }}>
+      {{ error(errores, 'nombre') }}
+    </div>
+
+    <fieldset>
+      <legend>¿Qué es?</legend>
+      <div class="fichas">
+        {% for valor, texto in tipos.items() %}
+        <label class="ficha"><input type="radio" name="tipo" value="{{ valor }}" {% if valores.tipo == valor %}checked{% endif %}><span>{{ texto }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Un ícono <span class="tenue">(opcional)</span></legend>
+      <div class="fichas">
+        {% for e in emojis %}
+        <label class="ficha ficha-emoji"><input type="radio" name="emoji" value="{{ e }}" {% if valores.emoji == e %}checked{% endif %}><span>{{ e }}</span></label>
+        {% endfor %}
+      </div>
+      {{ error(errores, 'emoji') }}
+    </fieldset>
+
+    <fieldset>
+      <legend>¿En qué moneda llevan las cuentas?</legend>
+      <div class="fichas">
+        <label class="ficha"><input type="radio" name="moneda" value="ARS" {% if valores.moneda != 'USD' %}checked{% endif %}><span>Pesos</span></label>
+        <label class="ficha"><input type="radio" name="moneda" value="USD" {% if valores.moneda == 'USD' %}checked{% endif %}><span>Dólares</span></label>
+      </div>
+      <p class="ayuda">Después podés cargar gastos en la otra moneda: se convierten con la cotización del día.</p>
+    </fieldset>
+
+    <div class="campo">
+      <label for="tu_nombre">¿Cómo te llamás?</label>
+      <input id="tu_nombre" name="tu_nombre" maxlength="40" required autocomplete="given-name" value="{{ valores.tu_nombre or '' }}" {{ invalido(errores, 'tu_nombre') }}>
+      {{ error(errores, 'tu_nombre') }}
+    </div>
+
+    <div class="campo">
+      <label for="otros">¿Quiénes más están?</label>
+      <textarea id="otros" name="otros" rows="3" aria-describedby="otros-ayuda{% if errores.otros %} error-otros{% endif %}" {% if errores.otros %}aria-invalid="true"{% endif %}>{{ valores.otros or '' }}</textarea>
+      <p class="ayuda" id="otros-ayuda">Separalos con comas: Juan, Caro, Tomi. Los que falten se pueden sumar después con el link.</p>
+      {{ error(errores, 'otros') }}
+    </div>
+
+    <p class="acciones acciones-final"><button class="boton boton-ancho">Crear el grupo</button></p>
+  </form>
+</div>
+{% endblock %}

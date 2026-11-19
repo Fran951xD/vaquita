@@ -3,6 +3,8 @@
 import os
 import secrets
 from dataclasses import dataclass
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 
 @dataclass(frozen=True)
@@ -29,3 +31,11 @@ def cargar() -> Config:
         produccion=produccion,
         url_cotizaciones=os.environ.get("VAQUITA_URL_COTIZACIONES", "https://dolarapi.com/v1"),
     )
+
+
+ZONA = ZoneInfo("America/Argentina/Buenos_Aires")
+
+
+def hoy() -> date:
+    """La fecha de hoy en Argentina (el servidor corre en UTC)."""
+    return datetime.now(ZONA).date()

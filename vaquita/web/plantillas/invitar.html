@@ -1,0 +1,29 @@
+{% extends "_grupo_base.html" %}
+{% from "_macros.html" import csrf_input %}
+{% block contenido %}
+<div class="pila-grande">
+  <div class="pila">
+    <h2>{% if nuevo %}Listo, ya está el grupo. Ahora invitá a los demás{% else %}Invitá a tu grupo{% endif %}</h2>
+    <p>Mandales este link. Cada uno entra, elige su nombre y puede cargar gastos. No hace falta crear cuenta.</p>
+  </div>
+  <div class="pila">
+    <div class="campo">
+      <label for="link">Link de invitación</label>
+      <input id="link" type="text" value="{{ link }}" readonly>
+    </div>
+    <div class="acciones">
+      <button type="button" class="boton" data-copiar="{{ link }}">Copiar link</button>
+      <a class="boton boton-secundario" href="{{ whatsapp }}" target="_blank" rel="noopener noreferrer">Mandar por WhatsApp</a>
+    </div>
+  </div>
+  <div class="pila">
+    <h2>¿Se compartió donde no debía?</h2>
+    <p>Generá un link nuevo. El anterior deja de andar; quienes ya entraron siguen en el grupo.</p>
+    <form method="post" action="/g/{{ ctx.grupo.id }}/invitar/nuevo">
+      {{ csrf_input(csrf) }}
+      <button class="boton boton-secundario">Cambiar el link</button>
+    </form>
+  </div>
+  <p><a href="/g/{{ ctx.grupo.id }}">Ir a los gastos del grupo</a></p>
+</div>
+{% endblock %}

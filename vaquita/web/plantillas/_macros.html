@@ -1,0 +1,73 @@
+{% macro error(errores, campo) -%}
+  {% if errores.get(campo) %}<p class="error" id="error-{{ campo }}">{{ errores[campo] }}</p>{% endif %}
+{%- endmacro %}
+
+{% macro invalido(errores, campo) -%}
+  {% if errores.get(campo) %}aria-invalid="true" aria-describedby="error-{{ campo }}"{% endif %}
+{%- endmacro %}
+
+{% macro csrf_input(csrf) -%}
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+{%- endmacro %}
+
+{# La libreta: saldos y transferencias. `acciones` muestra copiar, WhatsApp y "Ya se lo pasé". #}
+{% macro libreta(saldos, transferencias, moneda, pasados=[], acciones=false, grupo=none, csrf="", recien=none, titulo_id="libreta") -%}
+<section class="libreta" id="{{ titulo_id }}" aria-labelledby="{{ titulo_id }}-titulo">
+  <div class="libreta-seccion">
+    <h2 id="{{ titulo_id }}-titulo">Cómo venimos</h2>
+    <ol>
+      {% for s in saldos %}
+      <li class="renglon">
+        <span class="quien">{{ s.nombre }}
+          {%- if s.centavos > 0 %} <span class="estado le-deben">le deben</span>
+          {%- elif s.centavos < 0 %} <span class="estado debe">debe</span>
+          {%- else %} <span class="estado tenue">está a mano</span>{% endif %}</span>
+        <span class="monto {% if s.centavos > 0 %}le-deben{% elif s.centavos < 0 %}debe{% endif %}">{{ s.centavos|plata(moneda, signo=true) }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div class="libreta-seccion">
+    <h2>Para quedar a mano</h2>
+    {% if not transferencias and not pasados %}
+      <p class="a-mano">Están todos a mano. No hay nada para pasar.</p>
+    {% endif %}
+    <ol>
+      {% for t in transferencias %}
+      <li class="transferencia">
+        <div class="renglon">
+          <span class="quien"><b>{{ t.de }}</b> le pasa a <b>{{ t.a }}</b></span>
+          <span class="monto">{{ t.centavos|plata(moneda) }}</span>
+        </div>
+        {% if acciones %}
+        <div class="acciones">
+          {% if t.alias %}
+            <span class="alias">Alias <code>{{ t.alias }}</code></span>
+            <button type="button" class="boton boton-secundario boton-chico" data-copiar="{{ t.alias }}">Copiar alias</button>
+          {% endif %}
+          <a class="boton boton-secundario boton-chico" href="{{ t.whatsapp }}" target="_blank" rel="noopener noreferrer">Avisar por WhatsApp</a>
+          <form method="post" action="/g/{{ grupo.id }}/saldar" hx-post="/g/{{ grupo.id }}/saldar" hx-target="#libreta" hx-select="#libreta" hx-swap="outerHTML">
+            {{ csrf_input(csrf) }}
+            <input type="hidden" name="de_id" value="{{ t.de_id }}">
+            <input type="hidden" name="a_id" value="{{ t.a_id }}">
+            <input type="hidden" name="centavos" value="{{ t.centavos }}">
+            <button class="boton boton-chico">Ya se lo pasé</button>
+          </form>
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+      {% for p in pasados %}
+      <li class="transferencia tachada{% if recien and p.id == recien %} recien-tachada{% endif %}">
+        <div class="renglon">
+          <span class="quien"><b>{{ p.de }}</b> le pasó a <b>{{ p.a }}</b></span>
+          <span class="monto">{{ p.centavos|plata(moneda) }}</span>
+        </div>
+        <svg class="trazo" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path pathLength="1" d="M0.5 6.2 C 18 4.6, 34 6.8, 52 5.2 S 84 4.4, 99.5 5.6"/></svg>
+        <span class="oculto">Ya está pagado.</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{%- endmacro %}

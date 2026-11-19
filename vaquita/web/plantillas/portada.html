@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import libreta, csrf_input %}
+{% block titulo %}Vaquita: dividí los gastos con tu grupo{% endblock %}
+{% block cuerpo %}
+<div class="pagina pagina-ancha">
+  <header class="encabezado-sitio">
+    <a class="marca" href="/">Vaquita</a>
+  </header>
+  <main id="contenido">
+    <div class="portada-columnas">
+      <div class="portada">
+        <h1>Anotá quién puso qué.</h1>
+        <p class="bajada">Vaquita te dice quién le pasa cuánto a quién, con la menor cantidad de transferencias.</p>
+        <div class="acciones">
+          <a class="boton" href="/grupos/nuevo">Crear un grupo</a>
+          <form method="post" action="/demo">
+            {{ csrf_input(csrf) }}
+            <button class="boton boton-secundario">Ver un ejemplo</button>
+          </form>
+        </div>
+        {% if tus_grupos %}
+        <section class="tus-grupos" aria-labelledby="tus-grupos">
+          <h2 id="tus-grupos">Tus grupos</h2>
+          <ul class="movimientos">
+            {% for g in tus_grupos %}
+            <li><a class="movimiento" href="/g/{{ g.id }}"><span class="concepto"><span aria-hidden="true">{{ g.emoji }}</span> {{ g.nombre }}</span><span class="detalle">{{ g.miembros|length }} personas</span></a></li>
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+      </div>
+      <figure class="ejemplo">
+        {{ libreta(ejemplo.saldos, ejemplo.transferencias, "ARS", titulo_id="libreta-ejemplo") }}
+        <figcaption>Un asado de cinco: Sofi puso la carne, Juan el vino y el fernet, Caro el carbón y el pan.</figcaption>
+      </figure>
+    </div>
+  </main>
+</div>
+<footer class="pie">
+  <p>Vaquita es un proyecto de portfolio, de código abierto. No guarda datos de tarjetas ni de bancos.</p>
+</footer>
+{% endblock %}

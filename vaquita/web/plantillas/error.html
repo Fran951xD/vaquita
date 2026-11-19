@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} · Vaquita{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block contenido %}
+<div class="vacio pila">
+  <h1>{{ titulo }}</h1>
+  <p>{{ texto }}</p>
+  <div class="acciones"><a class="boton" href="/">Ir al inicio</a></div>
+</div>
+{% endblock %}
