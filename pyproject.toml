@@ -46,7 +46,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S", "DTZ", "PT"]
 ignore = ["RUF001", "RUF002", "RUF003"]  # el español usa ¿ ¡ « » y comillas tipográficas
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106"]
+"tests/**" = ["S101", "S105", "S106", "S107"]
 "e2e/**" = ["S101"]
 
 [tool.mypy]

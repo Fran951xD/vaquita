@@ -11,7 +11,7 @@ from sqlalchemy import select
 from vaquita.datos.modelos import Grupo
 from vaquita.dominio.deudas import GastoSaldo, calcular_saldos, simplificar
 from vaquita.dominio.division import dividir_iguales
-from vaquita.servicios import demo
+from vaquita.servicios import cuentas, demo
 from vaquita.servicios import grupos as servicio
 from vaquita.servicios.esquemas import EMOJIS, TIPO_A_EMOJI, TIPOS, NuevoGrupo
 from vaquita.web.dependencias import Db, ir_a, limitar, mis_grupos, pagina, recordar
@@ -42,13 +42,18 @@ EJEMPLO = _ejemplo()
 
 @rutas.get("/", response_class=HTMLResponse)
 def inicio(request: Request, db: Db) -> Response:
+    cuenta = request.session.get("cuenta")
+    if cuenta:
+        request.session["grupos"] = cuentas.sincronizar(db, uuid.UUID(cuenta), mis_grupos(request))
     ids = [uuid.UUID(g) for g in mis_grupos(request)]
     tus_grupos = (
         db.scalars(select(Grupo).where(Grupo.id.in_(ids)).order_by(Grupo.creado_en.desc())).all()
         if ids
         else []
     )
-    return pagina(request, "portada.html", tus_grupos=tus_grupos, ejemplo=EJEMPLO)
+    return pagina(
+        request, "portada.html", tus_grupos=tus_grupos, ejemplo=EJEMPLO, con_cuenta=bool(cuenta)
+    )
 
 
 def _formulario(request: Request, valores: dict[str, str], errs: dict[str, str]) -> Response:

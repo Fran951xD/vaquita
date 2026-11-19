@@ -5,6 +5,11 @@
 <div class="pagina pagina-ancha">
   <header class="encabezado-sitio">
     <a class="marca" href="/">Vaquita</a>
+    {% if con_cuenta %}
+    <form method="post" action="/cuenta/salir">{{ csrf_input(csrf) }}<button class="boton boton-texto boton-chico">Salir de tu cuenta</button></form>
+    {% else %}
+    <a href="/cuenta/entrar">Entrar</a>
+    {% endif %}
   </header>
   <main id="contenido">
     <div class="portada-columnas">
@@ -26,6 +31,7 @@
             <li><a class="movimiento" href="/g/{{ g.id }}"><span class="concepto"><span aria-hidden="true">{{ g.emoji }}</span> {{ g.nombre }}</span><span class="detalle">{{ g.miembros|length }} personas</span></a></li>
             {% endfor %}
           </ul>
+          {% if not con_cuenta %}<p class="tenue">Se recuerdan en este navegador. Para verlos en otro dispositivo, <a href="/cuenta/crear">creá una cuenta</a>.</p>{% endif %}
         </section>
         {% endif %}
       </div>
