@@ -159,3 +159,21 @@ def test_robots_no_indexa_invitaciones(cliente: TestClient) -> None:
 def test_las_respuestas_van_comprimidas(cliente: TestClient) -> None:
     respuesta = cliente.get("/estaticos/css/vaquita.css", headers={"Accept-Encoding": "gzip"})
     assert respuesta.headers["content-encoding"] == "gzip"
+
+
+def test_en_produccion_el_limite_usa_la_ip_que_agrega_el_proxy(app, cliente: TestClient) -> None:  # type: ignore[no-untyped-def]
+    from dataclasses import replace
+
+    app.state.config = replace(app.state.config, produccion=True)
+    token = csrf(cliente)
+    datos = {"nombre": "G", "tu_nombre": "Sofi", "csrf": token}
+    estados = [
+        cliente.post(
+            "/grupos",
+            data=datos,
+            headers={"X-Forwarded-For": f"10.0.0.{i}, 200.1.2.3"},  # el cliente inventa la primera
+            follow_redirects=False,
+        ).status_code
+        for i in range(11)
+    ]
+    assert estados[-1] == 429

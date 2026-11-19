@@ -101,5 +101,13 @@ class Limitador:
 
 
 def ip_de(request: Request) -> str:
-    # Detrás del proxy del hosting, uvicorn corre con --proxy-headers y deja la IP real acá.
+    """IP para el rate limiting.
+
+    En producción (detrás del proxy de Render) se usa la ÚLTIMA IP de X-Forwarded-For: la
+    agrega el proxy. Las anteriores las puede inventar el cliente, y con --proxy-headers
+    uvicorn deja en request.client la primera, que es falsificable.
+    """
+    reenviado = request.headers.get("x-forwarded-for")
+    if reenviado and request.app.state.config.produccion:
+        return reenviado.split(",")[-1].strip()
     return request.client.host if request.client else "desconocida"
