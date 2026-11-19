@@ -119,7 +119,7 @@ Invariantes en la base: `SUM(aporte) = monto_centavos = SUM(parte)` por gasto (v
 - `Centavos` es un `int` con tipo propio (`NewType`). Conversión de texto del usuario (`"12.500,50"`) → centavos en un solo lugar, con `Decimal` y redondeo `ROUND_HALF_EVEN`; si trae más de 2 decimales, error de validación (no se redondea en silencio).
 - **División**: se calcula la parte entera de cada uno y los centavos sobrantes se reparten de a uno siguiendo el **orden fijo del miembro** (`Miembro.orden`), empezando por quien tiene el mayor resto (método del mayor resto, desempate por orden). Determinista y `sum(partes) == total` siempre.
 - **Conversión de moneda**: `monto_centavos = round_half_even(original × cotización)` una sola vez al guardar; la cotización queda en el gasto. Cambiar la cotización del día no altera gastos viejos.
-- **Saldo** de cada miembro = aportes − partes − pagos hechos + pagos recibidos (signo: positivo = le deben).
+- **Saldo** de cada miembro = aportes − partes + pagos hechos − pagos recibidos (signo: positivo = le deben; pagar una deuda acerca a cero).
 - **Simplificación** (`dominio/deudas.py`): voraz, empareja al mayor deudor con el mayor acreedor hasta vaciar. Garantiza ≤ n−1 transferencias. No promete el mínimo exacto (problema NP-difícil); el ADR-0003 lo explica y muestra un contraejemplo.
 - **No simplificar**: deudas por par (quién le debe a quién por lo que pagó cada uno), compensadas solo dentro de cada par.
 
