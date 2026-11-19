@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abriendo la libreta · Vaquita</title>
+  <meta name="description" content="Vaquita está en un hosting gratis que se duerme. Esta página la despierta y te lleva apenas está lista.">
+  <meta name="color-scheme" content="light dark">
+  <style>
+    :root { --hoja:#f4f6f3; --superficie:#fff; --renglon:#c9d3dc; --birome:#1f3a93; --margen:#b03024; --grafito:#22262a; --tenue:#545d66; }
+    @media (prefers-color-scheme: dark) {
+      :root { --hoja:#1e2b27; --superficie:#2c3b36; --renglon:#3d4f49; --birome:#9db6ff; --margen:#ff9b8f; --grafito:#e8ece6; --tenue:#b1bdb7; }
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:1rem;
+      background:var(--hoja); color:var(--grafito); font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    .libreta { position:relative; width:100%; max-width:26rem; background:var(--superficie);
+      background-image:repeating-linear-gradient(to bottom,transparent 0 47px,var(--renglon) 47px 48px);
+      padding:0 1rem 48px 2.75rem; }
+    .libreta::before { content:""; position:absolute; top:0; bottom:0; left:2rem; width:2px; background:var(--margen); opacity:.75; }
+    h1 { margin:0; height:96px; display:flex; align-items:flex-end; padding-bottom:.3rem; font:600 1.5rem/1.2 Georgia,serif; }
+    p { margin:0; min-height:48px; display:flex; align-items:flex-end; padding-bottom:.3rem; }
+    .tenue { color:var(--tenue); }
+    a { color:var(--birome); }
+    .renglon { position:relative; }
+    svg { position:absolute; left:-.25rem; right:-.25rem; bottom:.55rem; width:calc(100% + .5rem); height:1rem; overflow:visible; }
+    path { fill:none; stroke:var(--birome); stroke-width:1.4; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1; }
+    .lista path { animation:trazar .4s ease-out forwards; }
+    @keyframes trazar { to { stroke-dashoffset:0; } }
+    @media (prefers-reduced-motion: reduce) { .lista path { animation:none; stroke-dashoffset:0; } }
+  </style>
+</head>
+<body>
+  <main class="libreta">
+    <h1>Abriendo la libreta</h1>
+    <p>Vaquita vive en un hosting gratis que se duerme cuando nadie la usa.</p>
+    <p class="renglon" id="estado">La estamos despertando. Tarda cerca de un minuto.
+      <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M0.5 6.2 C 18 4.6, 34 6.8, 52 5.2 S 84 4.4, 99.5 5.6"/></svg>
+    </p>
+    <p class="tenue" id="segundos" aria-live="polite"></p>
+    <p class="tenue">Si no te lleva sola, <a id="directo" href="#">entrá directo</a>.</p>
+  </main>
+  <script>
+    // Cambiá esta URL por la de tu app en Render. Fija a propósito: tomarla de la URL
+    // convertiría esta página en una redirección abierta.
+    const APP = "https://vaquita.onrender.com";
+    document.getElementById("directo").href = APP;
+    const inicio = Date.now();
+    const segundos = document.getElementById("segundos");
+    async function probar() {
+      try {
+        // no-cors: alcanza con que el servidor conteste para saber que despertó.
+        await fetch(APP + "/salud?" + Date.now(), { mode: "no-cors", cache: "no-store" });
+        document.getElementById("estado").classList.add("lista");
+        document.getElementById("estado").firstChild.textContent = "Lista. Te llevamos.";
+        setTimeout(() => location.replace(APP), 600);
+      } catch {
+        segundos.textContent = `Van ${Math.round((Date.now() - inicio) / 1000)} segundos.`;
+        setTimeout(probar, 3000);
+      }
+    }
+    probar();
+  </script>
+</body>
+</html>

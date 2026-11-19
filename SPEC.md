@@ -61,7 +61,7 @@ Orden: `dominio` (TDD) → `datos` → `servicios` → `web` por rebanadas verti
 ```bash
 uv sync                                   # instalar
 uv run alembic upgrade head               # migrar
-uv run fastapi dev vaquita/web/app.py     # levantar en http://localhost:8000
+uv run uvicorn vaquita.web.app:crear_app --factory --reload  # http://localhost:8000
 
 uv run pytest                             # unit + integración
 uv run pytest --cov=vaquita --cov-report=term-missing

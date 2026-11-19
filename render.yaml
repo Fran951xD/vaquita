@@ -1,0 +1,22 @@
+# Blueprint de Render: la app en el plan gratis. La base es Neon (ver GUIA-DESPLIEGUE.md).
+services:
+  - type: web
+    name: vaquita
+    runtime: python
+    plan: free
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    # Migra antes de arrancar. --proxy-headers: Render termina HTTPS en su proxy.
+    startCommand: >-
+      uv run alembic upgrade head &&
+      uv run uvicorn vaquita.web.app:crear_app --factory
+      --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /salud
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: VAQUITA_ENTORNO
+        value: produccion
+      - key: VAQUITA_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
