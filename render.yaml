@@ -1,9 +1,19 @@
-# Blueprint de Render: la app en el plan gratis. La base es Neon (ver GUIA-DESPLIEGUE.md).
+# Blueprint de Render: la app y su base en el plan gratis.
+# La base gratis de Render vence a los 30 días; para una base permanente, usá Neon
+# (ver GUIA-DESPLIEGUE.md, "Pasar la base a Neon").
+databases:
+  - name: vaquita-db
+    plan: free
+    region: virginia
+    databaseName: vaquita
+    user: vaquita
+
 services:
   - type: web
     name: vaquita
     runtime: python
     plan: free
+    region: virginia
     buildCommand: pip install uv && uv sync --frozen --no-dev
     # Migra antes de arrancar. --proxy-headers: Render termina HTTPS en su proxy.
     startCommand: >-
@@ -19,4 +29,6 @@ services:
       - key: VAQUITA_SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: vaquita-db
+          property: connectionString
