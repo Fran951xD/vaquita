@@ -101,7 +101,7 @@ Lo construí con [Claude Code](https://claude.com/claude-code) como asistente. A
 
 ## Desplegar
 
-Render (app, plan gratis) + Neon (Postgres gratis). Paso a paso en [GUIA-DESPLIEGUE.md](GUIA-DESPLIEGUE.md).
+Render, plan gratis, con su Postgres (o Neon para una base permanente). Paso a paso en [GUIA-DESPLIEGUE.md](GUIA-DESPLIEGUE.md).
 
 ## Licencia
 
