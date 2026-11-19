@@ -1,5 +1,8 @@
 """Aplicación FastAPI: arma middlewares, rutas y manejo de errores."""
 
+import logging
+import re
+
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -22,6 +25,20 @@ _TEXTOS = {
 }
 
 
+class FiltroTokens(logging.Filter):
+    """Tapa el token de los links de invitación en los logs de acceso."""
+
+    _patron = re.compile(r"/i/[^/\s\"?]+")
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.args, tuple):
+            record.args = tuple(
+                self._patron.sub("/i/***", a) if isinstance(a, str) else a for a in record.args
+            )
+        record.msg = self._patron.sub("/i/***", str(record.msg))
+        return True
+
+
 def crear_app(config: configuracion.Config | None = None) -> FastAPI:
     config = config or configuracion.cargar()
     app = FastAPI(
@@ -32,6 +49,7 @@ def crear_app(config: configuracion.Config | None = None) -> FastAPI:
         dependencies=[Depends(verificar_csrf)],
     )
     app.state.config = config
+    logging.getLogger("uvicorn.access").addFilter(FiltroTokens())
     app.state.fabrica = fabrica_de_sesiones(crear_motor(config.database_url))
     app.state.limitador = Limitador()
     app.state.cliente_http = None  # los tests inyectan un cliente falso
