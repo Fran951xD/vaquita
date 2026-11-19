@@ -8,7 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from vaquita import config as configuracion
 from vaquita.datos.base import crear_motor, fabrica_de_sesiones
 from vaquita.web.plantillas import ESTATICOS, plantillas
-from vaquita.web.rutas import gastos, grupos, portada, saldos
+from vaquita.web.rutas import gastos, grupos, portada, resumen, saldos
 from vaquita.web.seguridad import Cabeceras, Limitador, verificar_csrf
 
 _TITULOS = {
@@ -50,6 +50,7 @@ def crear_app(config: configuracion.Config | None = None) -> FastAPI:
     app.include_router(grupos.rutas)
     app.include_router(gastos.rutas)
     app.include_router(saldos.rutas)
+    app.include_router(resumen.rutas)
 
     @app.get("/salud", include_in_schema=False)
     def salud() -> dict[str, str]:

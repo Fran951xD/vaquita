@@ -59,7 +59,7 @@ module = ["vaquita.dominio.*", "vaquita.servicios.*"]
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["fpdf.*", "openpyxl.*", "axe_playwright_python.*"]
+module = ["openpyxl.*", "axe_playwright_python.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

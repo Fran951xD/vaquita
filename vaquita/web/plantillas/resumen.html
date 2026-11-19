@@ -1,0 +1,95 @@
+{% extends "_grupo_base.html" %}
+{% set moneda = ctx.grupo.moneda %}
+
+{# Barras horizontales en SVG generado en el servidor. Una sola serie: un solo color,
+   sin leyenda; el título dice qué es y cada barra lleva su valor. #}
+{% macro barras(id, titulo, descripcion, filas, campo='centavos') -%}
+{% set maximo = (filas|map(attribute=campo)|max) or 1 %}
+{% set alto_fila = 34 %}
+<figure class="pila">
+  <h2 id="{{ id }}">{{ titulo }}</h2>
+  <svg class="grafico" viewBox="0 0 360 {{ filas|length * alto_fila }}" role="img" aria-labelledby="{{ id }} {{ id }}-desc">
+    <desc id="{{ id }}-desc">{{ descripcion }}</desc>
+    {% for f in filas %}
+    {% set valor = f[campo] %}
+    {% set ancho = (valor / maximo * 170)|round(1) %}
+    {% set y = loop.index0 * alto_fila %}
+    <g>
+      <title>{{ f.etiqueta or f.nombre }}: {{ valor|plata(moneda) }}</title>
+      <text x="0" y="{{ y + 21 }}">{{ (f.etiqueta or f.nombre)|truncate(16, true, '…') }}</text>
+      <rect class="barra" x="110" y="{{ y + 8 }}" width="{{ [ancho, 2]|max }}" height="18" rx="3"></rect>
+      <text class="eje" x="{{ 110 + [ancho, 2]|max + 6 }}" y="{{ y + 21 }}">{{ valor|plata(moneda) }}</text>
+    </g>
+    {% endfor %}
+  </svg>
+</figure>
+{%- endmacro %}
+
+{% block contenido %}
+{% if not resumen.cantidad %}
+<div class="vacio"><p>Cuando carguen gastos, acá vas a ver en qué se fue la plata.</p></div>
+{% else %}
+<div class="pila-grande">
+  <dl class="cifras">
+    <div class="cifra"><dt>Gastaron en total</dt><dd class="monto">{{ resumen.total|plata(moneda) }}</dd></div>
+    <div class="cifra"><dt>Por persona, en promedio</dt><dd class="monto">{{ resumen.promedio_por_persona|plata(moneda) }}</dd></div>
+    <div class="cifra"><dt>Gastos cargados</dt><dd>{{ resumen.cantidad }}</dd></div>
+  </dl>
+
+  <div class="grupo-columnas">
+    <div class="pila-grande">
+      {{ barras("g-persona", "Cuánto le tocó a cada uno", "Barras horizontales con lo que le corresponde pagar a cada persona, de mayor a menor.", resumen.por_persona, 'le_toco') }}
+      {{ barras("g-categoria", "En qué se fue la plata", "Barras horizontales con el total por categoría, de mayor a menor.", resumen.por_categoria) }}
+    </div>
+    <div class="pila-grande">
+      {% set filas = resumen.en_el_tiempo %}
+      {% set maximo = (filas|map(attribute='centavos')|max) or 1 %}
+      {% set ancho_col = (320 / (filas|length))|round(1, 'floor') %}
+      <figure class="pila">
+        <h2 id="g-tiempo">Gasto por {{ resumen.unidad_tiempo }}</h2>
+        <svg class="grafico" viewBox="0 0 340 190" role="img" aria-labelledby="g-tiempo g-tiempo-desc">
+          <desc id="g-tiempo-desc">Columnas con el total gastado cada {{ resumen.unidad_tiempo }}, en orden cronológico.</desc>
+          <line class="linea-base" x1="10" x2="330" y1="160" y2="160"></line>
+          {% for f in filas %}
+          {% set alto = (f.centavos / maximo * 140)|round(1) %}
+          {% set x = 10 + loop.index0 * ancho_col %}
+          <g>
+            <title>{{ f.etiqueta }}: {{ f.centavos|plata(moneda) }}</title>
+            {% if f.centavos %}<rect class="barra" x="{{ x + 2 }}" y="{{ 160 - [alto, 2]|max }}" width="{{ [ancho_col - 4, 2]|max }}" height="{{ [alto, 2]|max }}" rx="3"></rect>{% endif %}
+            {% if loop.first or loop.last or filas|length <= 6 %}<text class="eje" x="{{ x + ancho_col / 2 }}" y="180" text-anchor="middle">{{ f.etiqueta }}</text>{% endif %}
+          </g>
+          {% endfor %}
+        </svg>
+      </figure>
+
+      <details class="datos">
+        <summary>Ver los números en una tabla</summary>
+        <table class="tabla">
+          <caption class="oculto">Lo que puso y lo que le tocó a cada persona</caption>
+          <thead><tr><th scope="col">Persona</th><th scope="col" class="monto">Puso</th><th scope="col" class="monto">Le tocó</th></tr></thead>
+          <tbody>
+            {% for p in resumen.por_persona %}<tr><th scope="row">{{ p.nombre }}</th><td class="monto">{{ p.puso|plata(moneda) }}</td><td class="monto">{{ p.le_toco|plata(moneda) }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+        <table class="tabla">
+          <caption class="oculto">Total por {{ resumen.unidad_tiempo }}</caption>
+          <thead><tr><th scope="col">{{ resumen.unidad_tiempo|capitalize }}</th><th scope="col" class="monto">Total</th></tr></thead>
+          <tbody>
+            {% for f in filas %}<tr><th scope="row">{{ f.etiqueta }}</th><td class="monto">{{ f.centavos|plata(moneda) }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </details>
+
+      <section class="pila" aria-labelledby="exportar">
+        <h2 id="exportar">Mandale el resumen al grupo</h2>
+        <div class="acciones">
+          <a class="boton" href="/g/{{ ctx.grupo.id }}/exportar.pdf">Descargar PDF</a>
+          <a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/exportar.xlsx">Excel</a>
+          <a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/exportar.csv">CSV</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
