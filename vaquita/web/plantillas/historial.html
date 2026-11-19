@@ -1,0 +1,13 @@
+{% extends "_grupo_base.html" %}
+{% block contenido %}
+<div class="pila">
+  <h2>Historial de cambios</h2>
+  <ol class="movimientos historial">
+    {% for e in eventos %}
+    <li><time datetime="{{ e.creado_en.isoformat() }}">{{ e.creado_en|fecha_hora }}</time>{{ e.texto }}</li>
+    {% else %}
+    <li>Todavía no pasó nada en este grupo.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

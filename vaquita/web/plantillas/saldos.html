@@ -1,0 +1,52 @@
+{% extends "_grupo_base.html" %}
+{% from "_macros.html" import libreta, csrf_input, error %}
+{% block contenido %}
+<div class="grupo-columnas">
+  <div class="pila-grande">
+    {{ libreta(cuentas.saldos, cuentas.transferencias, ctx.grupo.moneda, pasados=cuentas.pasados, acciones=true, grupo=ctx.grupo, csrf=csrf, recien=recien, titulo_id="libreta") }}
+    {% if not ctx.yo.alias_cbu %}
+    <p class="tenue">Cargá tu alias en <a href="/g/{{ ctx.grupo.id }}/ajustes">Ajustes</a> así te pueden pagar con un toque.</p>
+    {% endif %}
+  </div>
+  <div class="pila-grande">
+    <section class="pila" aria-labelledby="como-saldar">
+      <h2 id="como-saldar">Cómo se calcula</h2>
+      <form method="post" action="/g/{{ ctx.grupo.id }}/simplificar" class="pila">
+        {{ csrf_input(csrf) }}
+        <fieldset>
+          <legend class="oculto">Forma de saldar</legend>
+          <label class="casilla"><input type="radio" name="simplificar" value="si" {% if ctx.grupo.simplificar %}checked{% endif %}> Simplificar: la menor cantidad de transferencias</label>
+          <label class="casilla"><input type="radio" name="simplificar" value="no" {% if not ctx.grupo.simplificar %}checked{% endif %}> Cada uno le paga a quien le pagó</label>
+        </fieldset>
+        <button class="boton boton-secundario boton-chico">Usar esta forma</button>
+      </form>
+    </section>
+
+    <section class="pila" aria-labelledby="anotar-pago">
+      <h2 id="anotar-pago">Anotar un pago</h2>
+      <p class="tenue">Si alguien ya le pasó plata a otro por fuera de las sugerencias.</p>
+      <form method="post" action="/g/{{ ctx.grupo.id }}/pagos" novalidate>
+        {{ csrf_input(csrf) }}
+        {% if errores.pago %}<p class="error" id="error-pago" role="alert">{{ errores.pago }}</p>{% endif %}
+        <div class="campo">
+          <label for="pago-de">Quién pagó</label>
+          <select id="pago-de" name="de_id">
+            {% for m in ctx.grupo.miembros %}<option value="{{ m.id }}" {% if (valores.de_id or ctx.yo.id|string) == m.id|string %}selected{% endif %}>{{ m.nombre }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="pago-a">A quién</label>
+          <select id="pago-a" name="a_id">
+            {% for m in ctx.grupo.miembros %}<option value="{{ m.id }}" {% if valores.a_id == m.id|string %}selected{% endif %}>{{ m.nombre }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="pago-monto">Cuánto</label>
+          <input id="pago-monto" name="monto" inputmode="decimal" autocomplete="off" value="{{ valores.monto or '' }}">
+        </div>
+        <p class="acciones acciones-final"><button class="boton boton-secundario">Anotar pago</button></p>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

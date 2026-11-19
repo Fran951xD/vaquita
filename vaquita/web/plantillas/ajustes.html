@@ -1,0 +1,37 @@
+{% extends "_grupo_base.html" %}
+{% from "_macros.html" import csrf_input, error, invalido %}
+{% block contenido %}
+<div class="pila-grande">
+  <section class="pila" aria-labelledby="tu-alias">
+    <h2 id="tu-alias">Tu alias o CVU</h2>
+    <p>Lo ven solo las personas de este grupo, para pagarte cuando saldan.</p>
+    {% if guardado %}<p role="status">Listo, guardamos tu alias.</p>{% endif %}
+    <form method="post" action="/g/{{ ctx.grupo.id }}/ajustes/alias" novalidate class="pila">
+      {{ csrf_input(csrf) }}
+      <div class="campo">
+        <label for="alias_cbu">Alias o CVU de {{ ctx.yo.nombre }}</label>
+        <input id="alias_cbu" name="alias_cbu" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" value="{{ ctx.yo.alias_cbu or '' }}" {{ invalido(errores, 'alias_cbu') }}>
+        {{ error(errores, 'alias_cbu') }}
+      </div>
+      <button class="boton">Guardar alias</button>
+    </form>
+  </section>
+
+  <section class="pila" aria-labelledby="quienes">
+    <h2 id="quienes">Quiénes están</h2>
+    <ul class="movimientos">
+      {% for m in ctx.grupo.miembros %}<li class="movimiento"><span class="concepto">{{ m.nombre }}{% if m.id == ctx.yo.id %} (vos){% endif %}</span></li>{% endfor %}
+    </ul>
+    <p><a href="/g/{{ ctx.grupo.id }}/invitar">Invitar a alguien más</a></p>
+  </section>
+
+  <section class="pila" aria-labelledby="exportar">
+    <h2 id="exportar">Llevarte los datos</h2>
+    <div class="acciones">
+      <a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/exportar.csv">CSV</a>
+      <a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/exportar.xlsx">Excel</a>
+      <a class="boton boton-secundario" href="/g/{{ ctx.grupo.id }}/exportar.pdf">Resumen en PDF</a>
+    </div>
+  </section>
+</div>
+{% endblock %}
