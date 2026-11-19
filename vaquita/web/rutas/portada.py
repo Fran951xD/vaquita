@@ -11,6 +11,7 @@ from sqlalchemy import select
 from vaquita.datos.modelos import Grupo
 from vaquita.dominio.deudas import GastoSaldo, calcular_saldos, simplificar
 from vaquita.dominio.division import dividir_iguales
+from vaquita.servicios import demo
 from vaquita.servicios import grupos as servicio
 from vaquita.servicios.esquemas import EMOJIS, TIPO_A_EMOJI, TIPOS, NuevoGrupo
 from vaquita.web.dependencias import Db, ir_a, limitar, mis_grupos, pagina, recordar
@@ -101,3 +102,11 @@ def crear(
     grupo, yo = servicio.crear_grupo(db, datos, request.app.state.config.secret_key)
     recordar(request, grupo.id, yo.id)
     return ir_a(f"/g/{grupo.id}/invitar?nuevo=1")
+
+
+@rutas.post("/demo")
+def ver_ejemplo(request: Request, db: Db) -> Response:
+    limitar(request, "demo", maximo=5, ventana=3600)
+    grupo, yo = demo.crear(db, request.app.state.config.secret_key)
+    recordar(request, grupo.id, yo.id)
+    return ir_a(f"/g/{grupo.id}")
