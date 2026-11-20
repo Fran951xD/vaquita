@@ -1,4 +1,4 @@
-"""Exportar a CSV, Excel y PDF. El PDF repite la libreta: es lo que se manda al grupo."""
+"""Exportar a CSV, Excel y PDF. El PDF es el resumen que se manda al grupo."""
 
 import csv
 import io
@@ -141,20 +141,21 @@ def a_xlsx(grupo: Grupo, gastos: list[Gasto], pagos: list[Pago], cuentas: Estado
     return salida.getvalue()
 
 
-class _Libreta(FPDF):
+class _Sobre(FPDF):
     def __init__(self) -> None:
         super().__init__(format="A4")
         self.add_font("Archivo", "", FUENTES / "Archivo.ttf", variations={"wght": 400.0})
         self.add_font("Archivo", "B", FUENTES / "Archivo.ttf", variations={"wght": 600.0})
-        self.add_font("Bitter", "B", FUENTES / "Bitter.ttf", variations={"wght": 600.0})
+        self.add_font(
+            "Titulo", "", FUENTES / "Archivo.ttf", variations={"wght": 900.0, "wdth": 62.0}
+        )
         self.set_auto_page_break(auto=True, margin=18)
         self.set_margins(24, 18, 18)
 
     def header(self) -> None:
-        # El margen rojo de la libreta en cada hoja.
-        self.set_draw_color(192, 57, 43)
-        self.set_line_width(0.5)
-        self.line(18, 0, 18, self.h)
+        # Una franja kraft arriba, como la solapa del sobre.
+        self.set_fill_color(214, 184, 140)
+        self.rect(0, 0, self.w, 8, style="F")
 
     def renglon(
         self,
@@ -170,13 +171,13 @@ class _Libreta(FPDF):
         self.cell(110, 9, izquierda)
         self.set_text_color(*color)
         self.cell(0, 9, derecha, align="R", new_x="LMARGIN", new_y="NEXT")
-        self.set_draw_color(201, 211, 220)
+        self.set_draw_color(205, 191, 168)
         self.set_line_width(0.2)
         self.line(18, y + 9, self.w - 18, y + 9)
 
     def titulo(self, texto: str, tamanio: int = 14) -> None:
         self.ln(4)
-        self.set_font("Bitter", "B", tamanio)
+        self.set_font("Titulo", "", tamanio)
         self.set_text_color(34, 38, 42)
         self.cell(0, 11, texto, new_x="LMARGIN", new_y="NEXT")
 
@@ -184,7 +185,7 @@ class _Libreta(FPDF):
 def a_pdf(grupo: Grupo, gastos: list[Gasto], cuentas: EstadoDeCuentas) -> bytes:
     moneda = _moneda(grupo)
     hoy_ = hoy()
-    pdf = _Libreta()
+    pdf = _Sobre()
     pdf.add_page()
     pdf.titulo(grupo.nombre, 22)
     pdf.set_font("Archivo", "", 11)

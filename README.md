@@ -7,8 +7,8 @@ Una app web para dividir gastos con amigos, compañeros de depto o de viaje, y s
 **Demo:** [abrir Vaquita](https://Fran951xD.github.io/vaquita/despertando/) (o directo en [vaquita-k36x.onrender.com](https://vaquita-k36x.onrender.com)) → **Ver un ejemplo** (un viaje a Bariloche con 30 gastos ya cargados). El hosting es gratis y se duerme: la primera visita puede tardar cerca de un minuto.
 
 <p>
-  <img src="docs/capturas/libreta-celular-claro.png" alt="La libreta de saldos en el celular: cada persona en un renglón con su saldo, y una deuda tachada con birome después de saldarla" width="260">
-  <img src="docs/capturas/grupo-escritorio-oscuro.png" alt="Pantalla del grupo en escritorio, modo oscuro: lista de gastos por día y la libreta de saldos al costado" width="520">
+  <img src="docs/capturas/libreta-celular-claro.png" alt="Saldos en el celular: cada persona con su saldo y una deuda saldada con el sello rojo PAGADO" width="260">
+  <img src="docs/capturas/grupo-escritorio-oscuro.png" alt="Pantalla del grupo en escritorio, modo oscuro: el sobre con el nombre del grupo, la lista de gastos y los saldos al costado" width="520">
 </p>
 
 ## Qué resuelve
@@ -80,7 +80,7 @@ Link de invitación derivado con HMAC (en la base solo queda el hash), cookie de
 
 ## Diseño
 
-La identidad sale de la libreta del almacén donde se anotaba quién debía cuánto: la pantalla de saldos es una hoja con renglones y margen rojo, y saldar una deuda la tacha con un trazo de birome. De noche es un pizarrón de bodegón escrito con tiza. Todo lo demás es sobrio: listas en vez de tarjetas, casi sin íconos, montos en cifras tabulares con signo y palabra ("le deben", "debe") para no depender del color. Tipografías de fundiciones argentinas servidas localmente: Archivo (Omnibus-Type) y Bitter (Huerta Tipográfica). El plan completo está en [DISENO.md](DISENO.md) y todas las capturas en [docs/capturas](docs/capturas).
+La identidad sale del sobre donde se junta la plata de la vaquita: fondo de papel kraft, hojas pegadas con cinta, el grupo como un sobre con solapa y títulos enormes en letra condensada. Al saldar una deuda, un sello rojo **PAGADO** cae con un golpe sobre el papelito. De noche es un sobre manila oscuro. Los montos van en cifras tabulares con signo y palabra ("le deben", "debe") para no depender del color. Una sola familia tipográfica, Archivo (Omnibus-Type, de Buenos Aires), servida localmente y usada con su eje de ancho. El plan está en [DISENO.md](DISENO.md) y las capturas en [docs/capturas](docs/capturas).
 
 ## Estructura
 

@@ -1,6 +1,29 @@
 # Plan de diseño — Vaquita
 
-> Borrador para revisión, antes de escribir una línea de CSS.
+## Versión actual: el sobre de la colecta
+
+La primera versión (la libreta del almacén, más abajo) se veía demasiado sobria. Se rediseñó con una dirección más llamativa, elegida entre tres propuestas: **el sobre donde se junta la plata de la vaquita**.
+
+- **Fondo**: papel kraft con textura de fibra (SVG `feTurbulence` en un `data:` URI, sin imágenes).
+- **Hojas**: lo que se lee va en papel claro pegado con cinta adhesiva (lista de gastos, saldos, formularios).
+- **Cabecera del grupo**: un sobre con solapa (`clip-path`), con el nombre del grupo enorme.
+- **El momento memorable**: al tocar "Ya se lo pasé", un **sello rojo PAGADO** cae con un golpe sobre el papelito de la deuda (escala de 2,4 a 1 con rebote y la hoja tiembla). La tinta tiene textura gracias a una máscara de ruido. Con `prefers-reduced-motion`, el sello aparece quieto.
+- **Tipografía**: una sola familia, Archivo (Omnibus-Type), usando su eje de ancho: títulos en negra superpesada y condensada (`wdth 62`, `wght 900`), montos condensados con cifras tabulares, texto normal en ancho 100. Se dejó Bitter.
+- **Color** (claro / oscuro):
+
+| Token | Claro | Oscuro (sobre manila de noche) |
+|---|---|---|
+| Kraft | `#d6b88c` | `#241b13` |
+| Papel | `#fbf7ef` | `#33281e` |
+| Tinta | `#1c1712` | `#f4e8d3` |
+| Rojo sello (acción, "debe") | `#b8261b` | `#ff7d6e` |
+| Verde ("le deben") | `#1d6837` | `#8fd9a5` |
+
+- **Se mantiene**: celular primero, montos con signo y palabra (nunca solo color), listas en vez de tarjetas, contraste AA verificado con axe en los dos modos.
+
+---
+
+## Primera versión (descartada): la libreta del almacén
 
 ## La idea
 
