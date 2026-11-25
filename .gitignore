@@ -11,3 +11,6 @@ htmlcov/
 .env
 test-results/
 playwright-report/
+
+# configuración local de herramientas
+.claude/

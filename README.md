@@ -97,7 +97,7 @@ docs/adr/      decisiones de arquitectura
 
 ## Cómo lo construí
 
-Lo construí con [Claude Code](https://claude.com/claude-code) como asistente. Arrancamos por una especificación ([SPEC.md](SPEC.md)) y un plan de diseño ([DISENO.md](DISENO.md)) que revisé y aprobé antes de escribir código. Después avanzamos en tareas chicas ([tasks/](tasks)): un commit por tarea, cada uno con los tests en verde, y TDD para toda la lógica de plata. Yo definí qué construir, las reglas (nada de `float`, nada de IA dentro de la app, la estética), revisé cada paso y decidí los cambios de rumbo. Claude Code escribió buena parte del código y de los tests bajo esas reglas. Los tests de integración y los e2e encontraron errores reales en el camino: por ejemplo, una cotización "1.200" se leía como 1,2. Están en el historial de commits.
+Lo construí con [Claude Code](https://claude.com/claude-code) como asistente. Antes de escribir código definí el alcance, las reglas de la plata y los criterios de aceptación de cada funcionalidad, y armé el plan de diseño ([DISENO.md](DISENO.md)). Después avancé en tareas chicas: un commit por tarea, cada uno con los tests en verde, y TDD para toda la lógica de plata. Las decisiones importantes quedaron como registros de arquitectura en [docs/adr](docs/adr). Yo definí qué construir, las reglas (nada de `float`, nada de IA dentro de la app, la estética), revisé cada paso y decidí los cambios de rumbo. Claude Code escribió buena parte del código y de los tests bajo esas reglas. Los tests de integración y los e2e encontraron errores reales en el camino: por ejemplo, una cotización "1.200" se leía como 1,2. Están en el historial de commits.
 
 ## Desplegar
 
